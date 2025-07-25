@@ -6,6 +6,9 @@ based on the official rules for verifying digits.
 
 Author: Hadriely Harrizon
 '''
+import sqlite3
+
+
 def clean_doc(doc):
     return ''.join(filter(str.isdigit, doc))
 
@@ -14,6 +17,20 @@ def formatcpf(cpf):
 
 def formatcnpj(cnpj):
     return f"{cnpj[0:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:14]}"
+
+
+conn = sqlite3.connect('documentos.db')
+cursor = conn.cursor()
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS documentos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tipo TEXT,
+        numero TEXT
+    )
+''')
+conn.commit()
+
 
 
 while True:
@@ -32,6 +49,8 @@ while True:
             print('CPF limpo:', documento_limpo)
         else:
             print('Opção inválida.')
+        cursor.execute("INSERT INTO documentos (tipo, numero) VALUES (?, ?)", ("CPF", documento_limpo))
+        conn.commit()
 
 
     elif doc_type == "2":
@@ -45,6 +64,8 @@ while True:
             print("CNPJ limpo:", documento_limpo)
         else:
             print('Opção inválida.')
+        cursor.execute("INSERT INTO documentos (tipo, numero) VALUES (?, ?)", ("CNPJ", documento_limpo))
+        conn.commit()
 
     else:
         print("Opção Inválida.")
@@ -53,4 +74,7 @@ while True:
     if continuar == "n":
         print("Encerrando...")
         break
+
+conn.close()
+
 
