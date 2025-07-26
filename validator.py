@@ -36,7 +36,7 @@ conn.commit()
 while True:
 
     print ("Validação de CPF/CNPJ");
-    doc_type = input ("CPF - 1 | CNPJ - 2: ");
+    doc_type = input ("CPF - 1 | CNPJ - 2: | Ver todos - 3: ");
 
     if doc_type == "1":
         doc = input("Digite o CPF: ")
@@ -49,8 +49,16 @@ while True:
             print('CPF limpo:', documento_limpo)
         else:
             print('Opção inválida.')
+
         cursor.execute("INSERT INTO documentos (tipo, numero) VALUES (?, ?)", ("CPF", documento_limpo))
         conn.commit()
+        cursor.execute("SELECT * FROM documentos WHERE numero = ?", (documento_limpo,))
+        if cursor.fetchone():
+            print("Este documento já está armazenado.")
+        else:
+            cursor.execute("INSERT INTO documentos (tipo, numero) VALUES (?, ?)", ("CPF", documento_limpo))  # ou "CNPJ"
+            conn.commit()
+            print("Documento salvo com sucesso.")
 
 
     elif doc_type == "2":
@@ -67,8 +75,26 @@ while True:
         cursor.execute("INSERT INTO documentos (tipo, numero) VALUES (?, ?)", ("CNPJ", documento_limpo))
         conn.commit()
 
+        cursor.execute("SELECT * FROM documentos WHERE numero = ?", (documento_limpo,))
+        if cursor.fetchone():
+            print("Este documento já está armazenado.")
+        else:
+            cursor.execute("INSERT INTO documentos (tipo, numero) VALUES (?, ?)", ("CPF", documento_limpo))  # ou "CNPJ"
+            conn.commit()
+            print("Documento salvo com sucesso.")
+
+    elif doc_type == "3":
+        cursor.execute("SELECT tipo, numero FROM documentos")
+        registros = cursor.fetchall()
+        if registros:
+            print("\n--- Documentos Armazenados ---")
+            for tipo, numero in registros:
+                print(f"{tipo}: {numero}")
+        else:
+            print("Nenhum documento armazenado.")
+
     else:
-        print("Opção Inválida.")
+        print('Opção inválida.')
 
     continuar = input("Deseja validar outro documento? (s/n) ")
     if continuar == "n":
