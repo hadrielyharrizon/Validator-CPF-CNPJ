@@ -18,6 +18,39 @@ def formatcpf(cpf):
 def formatcnpj(cnpj):
     return f"{cnpj[0:2]}.{cnpj[2:5]}.{cnpj[5:8]}/{cnpj[8:12]}-{cnpj[12:14]}"
 
+def validar_cpf(cpf):
+    if len(cpf) != 11 or cpf == cpf[0] * 11:
+        return False
+
+    for i in range(9, 11):
+        soma = sum(int(cpf[j]) * ((i+1) - j) for j in range(i))
+        dig = (soma * 10) % 11
+        if dig == 10:
+            dig = 0
+        if dig != int(cpf[i]):
+            return False
+    return True
+
+def validar_cnpj(cnpj):
+    if len(cnpj) != 14 or cnpj == cnpj[0] * 14:
+        return False
+
+    pesos1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+    pesos2 = [6] + pesos1
+
+    soma1 = sum(int(cnpj[i]) * pesos1[i] for i in range(12))
+    dig1 = 11 - soma1 % 11
+    if dig1 >= 10:
+        dig1 = 0
+    if dig1 != int(cnpj[12]):
+        return False
+
+    soma2 = sum(int(cnpj[i]) * pesos2[i] for i in range(13))
+    dig2 = 11 - soma2 % 11
+    if dig2 >= 10:
+        dig2 = 0
+    return dig2 == int(cnpj[13])
+
 
 conn = sqlite3.connect('documentos.db')
 cursor = conn.cursor()
