@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentos Armazenados</title>
+</head>
+<body>
+    <h1>Documentos Armazenados</h1>
+
+    {% if registros %}
+        <ul>
+        {% for tipo, numero in registros %}
+            <li>{{ tipo }}: {{ numero }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum documento armazenado.</p>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}">Voltar</a>
+</body>
+</html>
