@@ -1,7 +1,9 @@
 from flask import Flask, request, render_template
 from validator import clean_doc, validar_cpf, validar_cnpj, formatcpf, formatcnpj
+from init_db import create_table
 import sqlite3
 
+create_table
 app = Flask(__name__)
 
 @app.route('/')
